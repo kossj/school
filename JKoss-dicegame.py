@@ -182,7 +182,6 @@ def gameplay_loop(activePlayer: Player):
 
         print("ENTER to continue.")
         input()
-
     return roll_again(diceToRoll)
 
 
@@ -198,7 +197,7 @@ def decide_win_score(points):
         multiplier = roll_die(sides)
         print(f"You rolled a {multiplier}.")
         if multiplier != 1:
-            break  # break will skip else, thus not repeating itself
+            break  # break will skip else, thus not ingrepeat
 
     else:
         print(f"You rolled a {multiplier}")
