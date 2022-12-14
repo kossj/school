@@ -83,7 +83,7 @@ def roll_die(sides: int = 6, player: Player = None):
 
 
 def roll_dice(dice_to_roll: int, sides: int = 6):
-    roll_result = list([roll_die(sides) for i in range(dice_to_roll)])
+    roll_result = list([roll_die(sides) for _ in range(dice_to_roll)])
     print(f"You rolled {dice_to_roll} dice with the resulting values:")
     print(f"{' '.join([str(num) for num in roll_result])}")
     return roll_result
@@ -100,29 +100,29 @@ def prompt_name(message: str):
 
 
 def choose_num_dice():
-    numDice = roll_die()
-    print(f"You rolled a {numDice}.")
-    if ask_yn(f"You will roll {numDice} dice.\nWould you like to roll again to decide the number "
+    num_dice = roll_die()
+    print(f"You rolled a {num_dice}.")
+    if ask_yn(f"You will roll {num_dice} dice.\nWould you like to roll again to decide the number "
               f"of dice you roll ONCE?"):
-        numDice = roll_die()
-        print(f"Result of roll is {numDice}. ENTER to continue.")
+        num_dice = roll_die()
+        print(f"Result of roll is {num_dice}. ENTER to continue.")
         input()
 
-    print(f"You will roll {numDice} dice this turn. ENTER to continue.")
+    print(f"You will roll {num_dice} dice this turn. ENTER to continue.")
     input()
-    return numDice
+    return num_dice
 
 
 def first_move():
-    pOneRoll = roll_die()
-    print(f"Player One rolled a {pOneRoll}.")
-    pTwoRoll = roll_die()
-    print(f"Player Two rolled a {pTwoRoll}")
+    p_one_roll = roll_die()
+    print(f"Player One rolled a {p_one_roll}.")
+    p_two_roll = roll_die()
+    print(f"Player Two rolled a {p_two_roll}")
 
-    if pOneRoll == pTwoRoll:
+    if p_one_roll == p_two_roll:
         print("Tie, re-rolling")
         first_move()
-    elif pOneRoll > pTwoRoll:
+    elif p_one_roll > p_two_roll:
         return True
     else:
         return False
@@ -163,10 +163,10 @@ def prompt_int(message: str, acceptable_values: range):
         print("Please enter a valid number.")
 
 
-def gameplay_loop(activePlayer: Player):
-    diceToRoll = choose_num_dice()
-    scoreCalc = score_calculator(roll_dice(diceToRoll))
-    activePlayer.add_points(scoreCalc)
+def gameplay_loop(active_player: Player):
+    dice_to_roll = choose_num_dice()
+    score_calc = score_calculator(roll_dice(dice_to_roll))
+    active_player.add_points(score_calc)
 
     print("ENTER to continue.")
     input()
@@ -175,13 +175,14 @@ def gameplay_loop(activePlayer: Player):
 
     if Player.turns_played == 1:
         # noinspection SpellCheckingInspection
-        winscore = decide_win_score(activePlayer.points)
+        winscore = decide_win_score(active_player.points)
         print(f"Score to win will be set to {winscore} for this game.")
 
         Player.points_to_win = winscore
 
         print("ENTER to continue.")
         input()
+
     return roll_again(diceToRoll)
 
 
@@ -205,7 +206,7 @@ def decide_win_score(points):
     return points * multiplier
 
 
-def on_win(winningPlayer: Player, losingPlayer: Player):
+def on_win(winning_player: Player, losing_player: Player):
     # noinspection SpellCheckingInspection
     def close_match(scorediff):
         if scorediff < 16:
@@ -213,23 +214,23 @@ def on_win(winningPlayer: Player, losingPlayer: Player):
         else:
             return ""
 
-    scoreDiff = winningPlayer.points - losingPlayer.points
+    score_diff = winning_player.points - losing_player.points
 
-    print(f"Congrats, {winningPlayer.name}! You won this game with {winningPlayer.points} points!")
-    print(f"You won on turn {Player.turns_played}, and {losingPlayer.name} was "
-          f"{Player.points_to_win - losingPlayer.points} points behind you. {close_match(scoreDiff)}")
+    print(f"Congrats, {winning_player.name}! You won this game with {winning_player.points} points!")
+    print(f"You won on turn {Player.turns_played}, and {losing_player.name} was "
+          f"{Player.points_to_win - losing_player.points} points behind you. {close_match(score_diff)}")
     exit()
 
 
-def roll_again(numDice: int):
-    print(f"You will now roll the same amount of dice you just rolled ({numDice}) "
+def roll_again(num_dice: int):
+    print(f"You will now roll the same amount of dice you just rolled ({num_dice}) "
           f"again to decide if you will get another turn.")
     print()
 
-    resultRollAgain = roll_dice(numDice)
+    result_roll_again = roll_dice(num_dice)
 
-    if len(set(resultRollAgain)) == 1:
-        print(f"You rolled all {resultRollAgain[0]}s! You will roll again.")
+    if len(set(result_roll_again)) == 1:
+        print(f"You rolled all {result_roll_again[0]}s! You will roll again.")
         print("ENTER to continue.")
         input()
         return True
@@ -254,39 +255,39 @@ def main():
         print("Alright, see you when you're ready!")
         exit()
 
-    pOne = Player(prompt_name("Player One Name:"))
-    pTwo = Player(prompt_name("Player Two Name:"))
+    p_one = Player(prompt_name("Player One Name:"))
+    p_two = Player(prompt_name("Player Two Name:"))
 
     print("Rolling to decide first player. ENTER to continue.")
     input()
     if first_move():
-        activePlayer = pOne
-        inactivePlayer = pTwo
+        active_player = p_one
+        inactive_player = p_two
     else:
-        activePlayer = pTwo
-        inactivePlayer = pOne
+        active_player = p_two
+        inactive_player = p_one
 
     while True:
         if Player.turns_played > 0:
-            if pOne.check_win():  # This chunk is fairly self-documenting
-                on_win(pOne, pTwo)
-            elif pTwo.check_win():
-                on_win(pTwo, pOne)
+            if p_one.check_win():  # This chunk is fairly self-documenting
+                on_win(p_one, p_two)
+            elif p_two.check_win():
+                on_win(p_two, p_one)
 
             print("********************")  # Recaps points after every turn except the first.
-            print(f"{pOne.name} score: {pOne.points}. {Player.points_to_win - pOne.points} points to win!")
-            print(f"{pTwo.name} score: {pTwo.points}. {Player.points_to_win - pTwo.points} points to win!")
+            print(f"{p_one.name} score: {p_one.points}. {Player.points_to_win - p_one.points} points to win!")
+            print(f"{p_two.name} score: {p_two.points}. {Player.points_to_win - p_two.points} points to win!")
             print("********************")
 
             print()
 
-        print(f"{activePlayer.name}'s turn.")
+        print(f"{active_player.name}'s turn.")
         print("ENTER to continue.")
         input()
-        if gameplay_loop(activePlayer):  # Will return true if it is next player's turn
+        if gameplay_loop(active_player):  # Will return true if it is next player's turn
             continue
         else:
-            activePlayer, inactivePlayer = inactivePlayer, activePlayer  # Swaps players
+            active_player, inactive_player = inactive_player, active_player  # Swaps players
 
 
 def test():  # To take place of main for testing implementation of Counter in score_calculator()
