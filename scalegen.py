@@ -25,6 +25,7 @@ def scaleGenerator(key: str, permute: str) -> Tuple[str, List[str]]:
     return tuple((name, scale))
 
 
-scale_call = scaleGenerator('G#', 'minor')
-print(f"{scale_call[0]}:\n{' '.join(scale_call[1])}")
+if __name__=="__main__":
+    scale_call = scaleGenerator('G#', 'minor')
+    print(f"{scale_call[0]}:\n{' '.join(scale_call[1])}")
 
